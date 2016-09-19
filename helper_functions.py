@@ -27,10 +27,43 @@ def split_space_delimited(df,col):
 
 	return df_final
 
-def trans_space_delimited(df,transcol,groupcols):
+def trans_space_delimited(df,splitcol,groupcols):
 
-	"""Function to split space delimited column, and return a DataFrame containing all 
-	items in the column gropued by other dataframe columns of your choice."""
+    """Function to split space delimited column, and return a DataFrame containing all 
+    items in the column gropued by other dataframe columns of your choice.
+    
+    usage:
+    
+    df_new = trans_space_delimited(df_old,splitcol='col',groupcols=['col1','col2'...])
+    
+    """
+    #drop null values of split col from df
+    df_notnull = df.loc[df[splitcol].notnull()]
+    df_notnull.reset_index().drop('index',axis=1,inplace=True)
+    
+    #limit dataframe to relevant columns
+    allcols = groupcols.copy()
+    allcols.append(splitcol)
+
+    df_lim = df_notnull.loc[:,allcols]
+    
+    #split delimited column, and create new dataframe of split values
+    df_split = pd.DataFrame(df_lim[splitcol].str.split(' ').tolist())
+    
+    #rename split columns
+    for col in df_split:
+        newcol = splitcol + '_' + str(col)
+        df_split = df_split.rename(columns={col:newcol})
+    
+    #join split columns to original dataframe
+    df_merge = df_lim.join(df_split)
+    
+    #transpose dataframe
+    df_trans = pd.melt(df_merge,id_vars=groupcols,value_vars=[x for x in df_merge.columns if x.startswith(splitcol + '_')])
+
+    return df_trans
+
+
 
 	
 
