@@ -27,6 +27,11 @@ def split_space_delimited(df,col):
 
 	return df_final
 
+def trans_space_delimited(df,transcol,groupcols):
+
+	"""Function to split space delimited column, and return a DataFrame containing all 
+	items in the column gropued by other dataframe columns of your choice."""
+
 	
 
 
