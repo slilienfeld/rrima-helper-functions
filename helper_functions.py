@@ -98,6 +98,34 @@ def unpack_repeat(df,repeatcol,mergecols=None):
     stacked = stacked.reset_index().drop('index',axis=1)
     
     return stacked
+
+
+def mc_age_groups(x):
+
+	"""Function to map a column of text MC age groups to a dataframe based on a column of ages.
+
+	use with df['age_group'] = df.age.map(mc_age_groups)"""
+    
+    x = float(x)
+    
+    if x >= 0 and x < 6:
+        return '0 - 5'
+    elif x >= 6 and x < 10:
+        return '6 - 10'
+    elif x >= 10 and x < 15:
+        return '10 - 14'
+    elif x >= 15 and x < 20:
+        return '15 - 19'
+    elif x >= 20 and x < 25:
+        return '20 - 24'
+    elif x >= 25 and x < 35:
+        return '25 - 34'
+    elif x >= 35 and x < 50:
+        return '35 - 49'
+    elif x >= 50:
+        return '50+'
+    else:
+        return 'Age group unknown'
     
     
 
