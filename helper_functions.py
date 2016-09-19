@@ -63,6 +63,43 @@ def trans_space_delimited(df,splitcol,groupcols):
 
     return df_trans
 
+def unpack_repeat(df,repeatcol,mergecols=None):
+    
+    """Function to extract data from columns of repeated questions in Ona.  Returns a new dataframe,
+    optionally also containing other, non-repeated columns of data from the original DataFrame
+    mapped to the unpacked repeated column."""
+    
+    stacked = None
+    
+    df = df.loc[df[repeatcol].notnull()]
+    
+    for i in range(0,len(df)):
+        to_unpack = df.iloc[i,df.columns.tolist().index(repeatcol)]
+        unpacked_row = pd.DataFrame(to_unpack)
+        
+        for col in unpacked_row:
+            newcol = col.split('/')[-1]
+            unpacked_row = unpacked_row.rename(columns={col:newcol})
+            
+        if mergecols != None:
+            for col in mergecols:
+                unpacked_row[col] = df.iloc[i,df.columns.tolist().index(col)]
+            
+            
+        if i == 0:
+            stacked = unpacked_row.copy()
+        else:
+            stacked = stacked.append(unpacked_row)
+            
+    #reorder columns - merged cols at left
+    col_order = mergecols + [x for x in stacked.columns if x not in mergecols]
+    stacked = stacked[col_order]
+    
+    stacked = stacked.reset_index().drop('index',axis=1)
+    
+    return stacked
+    
+    
 
 
 	
